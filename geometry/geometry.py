@@ -97,7 +97,14 @@ class billard:
         xb, yb = zip(*self.bounces)
         plt.plot(xb,yb, "g")
         plt.show()
-        
+    
+    def reset_slope(self, slope):
+        self.slope = l2d(slope)
+        self.position = self.bounces[0]
+        self.bounces = [self.position]
+        self.slopes = [self.slope]
+        self.path = line(self.slope, self.position)
+
     def on_corner(self):
         for c in self.corners:
             if abs(c[0]-self.position[0]) <= EPSILON and abs(c[1]-self.position[1]) <= EPSILON:
