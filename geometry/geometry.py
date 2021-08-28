@@ -5,6 +5,11 @@ from decimal import Decimal
 EPSILON = Decimal('1E-10')
 MAX_ITER = 10000
 
+SHAPE = {"Carre" : [[0,0], [0,1], [1,1], [1,0]],
+        "Rectangle" : [[0,0], [0,1], [2,1], [2,0]],
+        "Triangle Rectangle" : [[0,0], [0,1], [1,1]],
+        "Carre 45" : [[0,0.5], [0.5,1], [1,0.5], [0.5,0]]} 
+
 def reflect(k1,k2):
     return (k1*k2*k2+2*k2-k1)/(1+2*k1*k2-k2*k2)
 
