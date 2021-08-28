@@ -86,23 +86,16 @@ class billard:
         self.bounce_line = None
         self.bounces = [position]
         self.slopes = [slope]
+        self.interval = [Decimal('0')]
         for i in range(len(self.corners)):
             self.line.append(line.from_points(self.corners[i%len(self.corners)], self.corners[(i+1)%len(self.corners)]))
-    
-    def plot(self):
-        xs, ys = zip(*(self.corners+[self.corners[0]]))
-        figure(figsize=(8, 8))
-        # plt.axis("off")
-        plt.plot(xs,ys, c="k")
-        xb, yb = zip(*self.bounces)
-        plt.plot(xb,yb, "g")
-        plt.show()
     
     def reset_slope(self, slope):
         self.slope = l2d(slope)
         self.position = self.bounces[0]
         self.bounces = [self.position]
         self.slopes = [self.slope]
+        self.interval = [Decimal('0')]
         self.path = line(self.slope, self.position)
 
     def on_corner(self):
@@ -133,13 +126,10 @@ class billard:
         self.path = line(self.slope, self.position)
         self.bounces.append(self.position)
         self.slopes.append(self.slope)
+        self.interval.append(((self.bounces[-1][1]-self.bounces[-2][1])**2 + \
+                              (self.bounces[-1][0]-self.bounces[-2][0])**2)**(Decimal("0.5"))+ \
+                                  self.interval[-1])
     
-    def n_bounce(self, n:int):
+    def n_bounce(self, n:int=50):
         for _ in range(n):
             self.bounce()
-
-    # def loop(self):
-    #     for _ in range(MAX_ITER):
-    #         self.bounce()
-    #         if (self.position, self.slope) in zip(*[self.bounces, self.slopes]):
-    #             break
