@@ -13,6 +13,12 @@ class App:
                                orient="horizontal",length =700, 
                                command=self.updateValue)
         self.slider.pack()
+        
+        self.slider_proj = tkinter.Scale(self.frame, from_=0, to=1600, 
+                               orient="horizontal",length =700, 
+                               command=self.change_projection)
+        self.slider_proj.pack()
+        self.prog_angle = 0
         # Create 2 buttons
         self.button_left = tkinter.Button(self.frame,text="< Decrease Slope",
                                         command=self.decrease)
@@ -33,7 +39,7 @@ class App:
 
         self.button_shape = {}
         self.shape_choice = tkinter.StringVar(self.frame)
-        self.shape_choice.set("carre")
+        self.shape_choice.set("Carre")
         self.shape_list = tkinter.OptionMenu(self.frame, self.shape_choice, *SHAPE.keys(), command=self.change_shape)
         self.shape_list.pack(side="top")
 
@@ -41,7 +47,8 @@ class App:
         fig, (self.ax,self.ax2) = plt.subplots(ncols=2, figsize=(10,5))
 
         # Create billard
-        self.b=billard([[0,0], [0,1], [1,1]], position=[0.5,0.5], slope=[1,0])
+        shape = SHAPE[self.shape_choice.get()]
+        self.b=billard(shape, position=[0.5,0.5], slope=[1,0])
         self.b.n_bounce()
         xs, ys = zip(*(self.b.corners+[self.b.corners[0]]))
         self.box, = self.ax.plot(xs, ys, c="k")
@@ -58,14 +65,22 @@ class App:
         self.i = 0
 
     def update_plot(self):
+        
         x, y = zip(*self.b.bounces)
         self.line.set_data(x, y)
+
+        if self.prog_angle != 0:
+            bounces_proj = [[0.5+(float(xa)-0.5)*np.cos(self.prog_angle) + (float(ya)-0.5)*np.sin(self.prog_angle),\
+                            0.5-(float(xa)-0.5)*np.sin(self.prog_angle) + (float(ya)-0.5)*np.cos(self.prog_angle)]\
+                                for xa, ya in self.b.bounces]
+            x, y = zip(*bounces_proj)
+
         self.x_line.set_data(self.b.interval,x)
         self.y_line.set_data(self.b.interval,y)
         self.canvas.draw()
 
     def updateValue(self, event):
-        angle = (self.slider.get()*2*np.pi)/1600
+        angle = (self.slider.get()*np.pi)/1600
         c,s=np.cos(angle), np.sin(angle)
         self.b.reset_slope([c,s])
         self.b.n_bounce()
@@ -111,6 +126,11 @@ class App:
         self.y_state = not self.y_state
         self.y_line.set_visible(self.y_state)
         self.update_plot()
+
+    def change_projection(self, event):
+        self.prog_angle = (self.slider_proj.get()*2*np.pi)/1600
+        self.update_plot()
+
 
 
 root = tkinter.Tk()
