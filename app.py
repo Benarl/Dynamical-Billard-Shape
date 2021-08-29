@@ -41,7 +41,7 @@ class App:
         fig, (self.ax,self.ax2) = plt.subplots(ncols=2, figsize=(10,5))
 
         # Create billard
-        self.b=billard([[0,0], [0,1], [1,1]], position=[0.5,0.5], slope=[1,1.1])
+        self.b=billard([[0,0], [0,1], [1,1]], position=[0.5,0.5], slope=[1,0])
         self.b.n_bounce()
         xs, ys = zip(*(self.b.corners+[self.b.corners[0]]))
         self.box, = self.ax.plot(xs, ys, c="k")
@@ -65,9 +65,9 @@ class App:
         self.canvas.draw()
 
     def updateValue(self, event):
-        sg = self.slider.get()/1000
-        t = 1+round(np.tan(sg)*1000)/1000
-        self.b.reset_slope([1, t])
+        angle = (self.slider.get()*2*np.pi)/1600
+        c,s=np.cos(angle), np.sin(angle)
+        self.b.reset_slope([c,s])
         self.b.n_bounce()
         self.update_plot()
         
@@ -88,9 +88,9 @@ class App:
 
     def transform_shape(self):
         self.b=billard([[0,0], [self.i,1], [1+self.i,1], [1,0]], position=[0,0], slope=[1,1])
-        sg = self.slider.get()/1000
-        t = 1+round(np.tan(sg)*1000)/1000
-        self.b.reset_slope([1,t])
+        angle = (self.slider.get()*2*np.pi)/1600
+        c,s=np.cos(angle), np.sin(angle)
+        self.b.reset_slope([c,s])
         self.b.n_bounce()
         
         self.reset_view()
