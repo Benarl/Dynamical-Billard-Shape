@@ -8,7 +8,9 @@ MAX_ITER = 10000
 SHAPE = {"Carre" : [[0,0], [0,1], [1,1], [1,0]],
         "Rectangle" : [[0,0], [0,1], [2,1], [2,0]],
         "Triangle Rectangle" : [[0,0], [0,1], [1,1]],
-        "Carre 45" : [[0,0.5], [0.5,1], [1,0.5], [0.5,0]]} 
+        "Carre 45" : [[0,0.5], [0.5,1], [1,0.5], [0.5,0]],
+        "Triangle Isocèle" : [[0,0], [0.5,1], [1,0]],
+        "Triangle Eqiulatéral" : [[0,0], [0.5,0.5*3**(1/2)], [1,0]]} 
 
 def reflect(k1,k2):
     """
@@ -200,7 +202,12 @@ class billard:
                               (self.bounces[-1][0]-self.bounces[-2][0])**2)**(Decimal("0.5"))+ \
                                   self.interval[-1])
     
-    def n_bounce(self, n:int=50):
+    def loop(self):
+        while len(self.bounces) <= 50:
+            self.bounce()
+
+
+    def n_bounce(self, n:int=10):
         """
         Applied n bounce at a time
         """
