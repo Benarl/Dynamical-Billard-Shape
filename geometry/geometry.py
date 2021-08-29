@@ -11,8 +11,11 @@ SHAPE = {"Carre" : [[0,0], [0,1], [1,1], [1,0]],
         "Carre 45" : [[0,0.5], [0.5,1], [1,0.5], [0.5,0]]} 
 
 def reflect(k1,k2):
-    return (k1*k2*k2+2*k2-k1)/(1+2*k1*k2-k2*k2)
-
+    try:
+        reflected = (k1*k2*k2+2*k2-k1)/(1+2*k1*k2-k2*k2)
+        return [1, reflected]
+    except ZeroDivisionError:
+        return [0,1]
 def f2d(f:float):
     return Decimal(str(f))
 
@@ -53,10 +56,11 @@ class line:
         if self.mode == "finite":
             cond_x = (self.p1[0]-p[0])*(self.p2[0]-p[0]) <= EPSILON
             cond_y = (self.p1[1]-p[1])*(self.p2[1]-p[1]) <= EPSILON
+            return cond_equation and cond_x and cond_y
         elif self.mode == "semi":
             cond_x = abs(self.p1[0] - p[0]) >= EPSILON
             cond_y = abs(self.p1[1] - p[1]) >= EPSILON
-        return cond_equation and cond_x and cond_y
+            return cond_equation and (cond_x or cond_y)
     
     def intersect(self, line):
         p=[0,0]
@@ -115,6 +119,8 @@ class billard:
             if intersection:
                 self.bounce_line=l
                 break
+        if not intersection:
+            pass
         self.position = intersection
         if self.on_corner():
             pass
@@ -123,11 +129,13 @@ class billard:
                 self.slope = [-self.slope[0], self.slope[1]]
             elif self.bounce_line.c == 0:
                 self.slope = [self.slope[0], -self.slope[1]]
+            elif self.slope[0] == 0:
+                self.slope[1] = (self.bounce_line.a **2 - 1)/2*self.bounce_line.a 
+                self.slope[0] = Decimal("1")
             else:
                 normal = -1/self.bounce_line.a 
                 incident = self.slope[1]/self.slope[0]
-                reflected = reflect(incident, normal)
-                self.slope = [1,reflected]
+                self.slope = reflect(incident, normal)
         self.path = line(self.slope, self.position)
         self.bounces.append(self.position)
         self.slopes.append(self.slope)
