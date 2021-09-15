@@ -19,14 +19,8 @@ class App:
                                command=self.change_projection)
         self.slider_proj.pack()
         self.prog_angle = 0
-        # Create 2 buttons
-        self.button_left = tkinter.Button(self.frame,text="< Decrease Slope",
-                                        command=self.decrease)
-        self.button_left.pack(side="left")
-        self.button_right = tkinter.Button(self.frame,text="Increase Slope >",
-                                        command=self.increase)
-        self.button_right.pack(side="left")
-
+        
+        # create buttons
         self.button_x = tkinter.Button(self.frame,text="X : On/Off",
                                         command=self.x_switch)
         self.button_x.pack(side="left")
@@ -35,6 +29,11 @@ class App:
                                         command=self.y_switch)
         self.button_y.pack(side="right")
         self.y_state = True
+
+        self.button_auto = tkinter.Button(self.frame,text="auto",
+                                        command=self.auto_run)
+        self.button_auto.pack(side="left")
+
 
 
         self.button_shape = {}
@@ -49,13 +48,16 @@ class App:
         # Create billard
         shape = SHAPE[self.shape_choice.get()]
         self.b=billard(shape, position=[0.5,0.5], slope=[1,0])
-        self.b.n_bounce()
+        self.b.loop()
         xs, ys = zip(*(self.b.corners+[self.b.corners[0]]))
         self.box, = self.ax.plot(xs, ys, c="k")
+        self.ax.axis("off")
         x, y = zip(*self.b.bounces)
-        self.line, = self.ax.plot(x,y, c="g")
-        self.x_line, = self.ax2.plot(self.b.interval,x, c='k')
-        self.y_line, = self.ax2.plot(self.b.interval,y, c='g')
+        self.line, = self.ax.plot(x,y, c="purple", lw=2)
+        self.ax2.set_xlim(0,5)
+        self.ax2.axis("off")
+        self.x_line, = self.ax2.plot(self.b.interval,x, c='firebrick', lw=2)
+        self.y_line, = self.ax2.plot(self.b.interval,y, c='royalblue', lw=2)
 
         self.canvas = FigureCanvasTkAgg(fig,master=master)
         self.canvas.draw()
@@ -63,6 +65,17 @@ class App:
         self.frame.pack()
 
         self.i = 0
+
+
+    def auto_run(self):
+        for i in range (0,1600,1):
+            angle = min(i*8/1600, 0.999999)
+            self.b.reset_slope([1,angle])
+            self.b.loop()
+            self.update_plot()
+            if angle > 1.1:
+                break
+        
 
     def update_plot(self):
         
@@ -80,34 +93,18 @@ class App:
         self.canvas.draw()
 
     def updateValue(self, event):
-        angle = (self.slider.get()*np.pi)/1600
+        angle = (self.slider.get()*np.pi/2)/1600
         c,s=np.cos(angle), np.sin(angle)
         self.b.reset_slope([c,s])
-        self.b.n_bounce()
+        angle = self.slider.get()/1600
+        self.b.reset_slope([1,angle])
+        self.b.loop()
         self.update_plot()
-        
-    def decrease(self):
-        self.i -= 0.001
-        self.transform_shape()
-
-    def increase(self):
-        self.i += 0.001
-        self.transform_shape()
 
     def change_shape(self, event):
         shape = SHAPE[self.shape_choice.get()]
         self.b=billard(shape, position=self.b.bounces[0], slope=[1,1])
-        self.b.n_bounce()
-        self.reset_view()
-        self.update_plot()
-
-    def transform_shape(self):
-        self.b=billard([[0,0], [self.i,1], [1+self.i,1], [1,0]], position=[0,0], slope=[1,1])
-        angle = (self.slider.get()*2*np.pi)/1600
-        c,s=np.cos(angle), np.sin(angle)
-        self.b.reset_slope([c,s])
-        self.b.n_bounce()
-        
+        self.b.loop()
         self.reset_view()
         self.update_plot()
 
