@@ -2,7 +2,7 @@
 
 This repository is related to the Videos of Dynamical Billard Series from the Youtube Channel : 
 
-[Mathematical Coincidence]: https://www.youtube.com/channel/UCH7SiBBxCSg03TwGeo5BTjw
+[Mathematical Coincidence]: (https://www.youtube.com/channel/UCH7SiBBxCSg03TwGeo5BTjw)
 
 Update from 04/10/21 :
 
