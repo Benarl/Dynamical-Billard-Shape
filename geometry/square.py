@@ -12,6 +12,7 @@ class billard_square:
         self.position=position
         self.N = 1000
         self.c=1
+        self.interval=range(self.N)
 
     def x(self, t):
         return triangle(self.c*(t)*np.cos(self.angle)+self.position[0])
@@ -20,7 +21,7 @@ class billard_square:
         return triangle(self.c*(t)*np.sin(self.angle)+self.position[1])
 
     def trajectory(self, T=5):
-        trajectory=[[self.x((i)*T/self.N) for i in range(self.N)], [self.y((i+self.position[1])*T/self.N) for i in range(self.N)]]
+        trajectory=[[self.x((i)*T/self.N) for i in self.interval], [self.y((i+self.position[1])*T/self.N) for i in self.interval]]
         return trajectory
 
 

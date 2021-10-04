@@ -13,8 +13,9 @@ class App:
         self.slider = tkinter.Scale(self.frame, from_=0, to=1600, 
                                orient="horizontal",length =700, 
                                command=self.updateValue)
+
+        length_label = tkinter.Label(self.frame, text="Angle")
         self.slider.pack()
-        
         self.slider_proj = tkinter.Scale(self.frame, from_=0, to=1600, 
                                orient="horizontal",length =700, 
                                command=self.change_projection)
@@ -35,7 +36,7 @@ class App:
         
         # create buttons
 
-        fig, self.ax = plt.subplots(ncols=1, figsize=(5,5))
+        fig, (self.ax,self.ax2) = plt.subplots(ncols=2, figsize=(10,5))
 
         # Create billard
         self.b=billard_square(angle=0, position=[0,0])
@@ -45,6 +46,10 @@ class App:
         x, y = self.b.trajectory()
 
         self.line, = self.ax.plot(x,y, c="k", lw=2)
+
+        self.ax2.set_xlim(0,self.b.N)
+        self.x_line, = self.ax2.plot(self.b.interval,x, c='firebrick', lw=2)
+        self.y_line, = self.ax2.plot(self.b.interval,y, c='royalblue', lw=2)
 
         self.canvas = FigureCanvasTkAgg(fig,master=master)
         self.canvas.draw()
@@ -58,12 +63,15 @@ class App:
         x, y = self.b.trajectory()
         self.line.set_data(x, y)
 
+        self.ax2.set_xlim(0,self.b.N)
+        self.x_line.set_data(self.b.interval,x)
+        self.y_line.set_data(self.b.interval,y)
         self.canvas.draw()
 
     def updateValue(self, event):
         # angle = (self.slider.get()*np.pi/2)/1600
         # c,s=np.cos(angle), np.sin(angle)
-        angle = 3*self.slider.get()/1600
+        angle = np.pi/2*self.slider.get()/(1600)
         self.b.angle=angle
         # self.b.reset_slope([1,angle])
         # self.b.loop()
