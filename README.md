@@ -8,12 +8,20 @@ For now you can test the square solution, by changing the initial angle, the ini
 
 ## Installation
 
-You need to clone the respository and install python 3.8 with pip, and pipenv.
+You need to clone the respository and install python 3.10 with pip. \
+You might also need to install tkinter and pipenv : \
+```sudo apt-get install python3-tk``` \
+```pip install pipenv```
 
-Then you will need to install all the packages, in command line with :
+You will need to install python lib at root folder:
 
 ```pipenv install```
 
+Activate the python virtual env
+
+```pipenv shell```
+
 Finally, to test the square solution, run :
 
-``python app_square.py``
+```python app_square.py```
+
